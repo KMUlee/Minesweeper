@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>puzzle</title>
+    <style>
+        * {padding: 0; margin: 0}
+        canvas { background: #eee; display: block; margin: 0 auto}
+    </style>
+</head>
+<body>
+<canvas id="canv" width="309" height="309" onclick="mouseMoveHandler(event)"></canvas>
+<div id="temp" align="center">
+</div>
+<script>
+    var canvas = document.getElementById("canv");
+    var ctx = canvas.getContext("2d");
+
+    var map = [];
+    var puz = [];
+    var num = '0123456789';
+    var used = ['9'];
+    var trial = 0;
+    var time = 0;
+    var min = '';
+    var sec = '';
+    var x_m = 2;
+    var y_m = 2;
+    var x = 100;
+    var y = 100;
+
+    class Tile {
+        constructor(x, y, n) {
+            this.x = x;
+            this.y = y;
+            this.n = n;
+        }
+
+        draw() {
+            ctx.beginPath();
+            ctx.rect(this.x, this.y, 103, 103);
+            ctx.fillStyle = "white";
+            if (this.n == '0') {
+                ctx.fillStyle = "#eee";
+            }
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.font = "64px Arial";
+            ctx.fillStyle = "black";
+            if (this.n == '0'){
+                ctx.fillStyle = "#eee";
+            }
+            ctx.fillText(this.n, this.x+34, this.y+76);
+            ctx.closePath();
+        }
+
+    }
+
+    function clear() {
+        var cl = '123456780';
+        var ch = 0;
+        for (i = 0; i < 3; i++) {
+            for (j = 0; j < 3; j++){
+                if (map[i][j].n != cl[ch]){
+                    return false;
+                }
+                ch++;
+            }
+        }
+        alert(min+"m"+sec+"s"+"and trial is "+trial);
+        document.location.reload();
+    }
+
+    function mouseMoveHandler(e) {
+        var relativeX = e.clientX - canvas.offsetLeft;
+        var relativeY = e.clientY - canvas.offsetTop;
+        var temp = [0,0,1,-1];
+        var temp_1 = [1,-1,0,0];
+        for (i = 0; i < 3; i++){
+            for (j = 0; j < 3; j++){
+                var p = puz[i][j];
+
+                if (relativeX > p.x && relativeX < p.x +103) {
+                    if (relativeY > p.y && relativeY < p.y+103) {
+                        if (p.n == '0'){
+                            return false;
+                        }
+                        for (k = 0; k < 4; k++){
+                            if (i+temp[k] > -1 && i+temp[k] < 3 && j+temp_1[k] > -1 && j+temp_1[k] < 3){
+                                var sw = map[i+temp[k]][j+temp_1[k]];
+                                if (sw.n == '0') {
+                                    var sw_t = sw.n;
+                                    sw.n = p.n;
+                                    map[i][j].n = sw_t;
+                                    trial++;
+                                    clear();
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    function make_map() {
+        for (i = 0; i < 3; i++){
+            map[i] = [];
+            for (j = 0; j < 3; j++){
+                while (true){
+                    var rand = Math.floor(Math.random()*10);
+                    if (used.indexOf(num[rand]) == -1){
+                        var number = num[rand];
+                        used.push(num[rand]);
+                        break;
+                    }
+                }
+                map[i][j] = { x: x*j+x_m, y: y*i+y_m, n: number};
+            }
+        }
+    }
+
+    function draw_map() {
+        puz = [];
+        for (i = 0; i < 3; i++){
+            puz[i] = [];
+            for (j = 0; j < 3; j++){
+                var m = map[i][j];
+                puz[i][j] = new Tile(m.x, m.y, m.n);
+                puz[i][j].draw();
+            }
+        }
+    }
+
+    function draw_main() {
+        ctx.beginPath();
+        for (i = 0; i < 4; i++){
+            ctx.rect(i*102, 0, 2, canvas.height);
+        }
+        for (i = 0; i < 4; i++){
+            ctx.rect(0, i*102, canvas.width, 2);
+        }
+        ctx.fillStyle = "black";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+
+    function draw() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+
+        draw_map();
+        draw_main();
+
+        document.getElementById("temp").innerText = "time: "+min+"m"+sec+"s"+"  "+"trial: "+trial;
+
+        requestAnimationFrame(draw);
+    }
+    make_map();
+    draw();
+    var timer = setInterval(function () {
+        min = parseInt(time/60);
+        sec = parseInt(time%60);
+        document.getElementById("temp").innerText = "time: "+min+"m"+sec+"s"+"trial: "+trial;
+        time++;
+    }, 1000);
+</script>
+</body>
+</html>
