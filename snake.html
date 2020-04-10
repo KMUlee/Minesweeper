@@ -108,7 +108,6 @@
             make_food();
             document.getElementById("text").innerText = "Score : "+score;
         }
-        console.log(snake[0],snake[1]);
         make_map();
     }
 
@@ -123,10 +122,9 @@
                     if (map[i][j].s == 1) {
                         break;
                     }
-                    if (temp == food) {
+                    else if (temp == food) {
                         feed = [j,i];
                         ch = false;
-                        console.log(i, j);
                     }
                     temp++
                 }
