@@ -93,15 +93,13 @@
         snake[0][0] += move[key][0];
         snake[0][1] += move[key][1];
         if (snake[0][0] < 0 || snake[0][0] > w || snake[0][1] < 0 || snake[0][1] > w){
-            alert("Game Over!!");
-            snake[0][0] = 10;
-            snake[0][1] = 10;
             document.location.reload();
+            alert("Game Over!!");
         }
         for (i = 1; i < snake.length; i++){
             if (snake[0][0] == snake[i][0] && snake[0][1] == snake[i][1]){
-                alert("Game Over!!");
                 document.location.reload();
+                alert("Game Over!!");
             }
         }
         if (snake[0][0] == feed[0] && snake[0][1] == feed[1]){
@@ -128,6 +126,7 @@
                     if (temp == food) {
                         feed = [j,i];
                         ch = false;
+                        console.log(i, j);
                     }
                     temp++
                 }
